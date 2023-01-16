@@ -1,16 +1,29 @@
-use actix_web::{get, http::StatusCode, web, App, HttpServer, Responder};
+mod api;
+mod database;
+mod error;
+mod models;
+mod schema;
+
+use actix_web::{get, http::StatusCode, web::Data, App, HttpServer, Responder};
+use database::Database;
 
 #[get("/")]
 async fn root() -> impl Responder {
-    StatusCode::FORBIDDEN
+    ("Forbidden", StatusCode::FORBIDDEN)
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
-        App::new().service(root)
+    let db_pool = Data::new(Database {
+        pool: Box::new(database::get_pool().await),
+    });
+    HttpServer::new(move || {
+        App::new()
+            .app_data(Data::clone(&db_pool))
+            .service(root)
+            .service(api::key::register_key)
     })
-    .bind(("127.0.0.1", "8080"))?
+    .bind(("127.0.0.1", 8080))?
     .run()
     .await
 }

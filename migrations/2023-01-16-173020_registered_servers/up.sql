@@ -1,0 +1,6 @@
+CREATE TABLE IF NOT EXISTS `registered_servers` (
+    id SERIAL PRIMARY KEY,
+    server VARCHAR(32) UNIQUE NOT NULL,
+    password VARCHAR(256) NOT NULL,
+    apikey VARCHAR(128) UNIQUE NOT NULL
+);
