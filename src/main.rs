@@ -21,7 +21,8 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(Data::clone(&db_pool))
             .service(root)
-            .service(api::key::register_key)
+            .service(api::key::request_key /* GET /key */)
+            .service(api::key::register_key /* POST /key */)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
