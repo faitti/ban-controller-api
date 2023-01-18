@@ -21,7 +21,7 @@ pub struct ServerData {
     pub apikey: String,
 }
 
-#[derive(Queryable)]
+#[derive(Queryable, Debug, Clone, PartialEq, Eq)]
 #[diesel(table_name = registerd_servers)]
 pub struct FullServerData {
     pub id: u64,

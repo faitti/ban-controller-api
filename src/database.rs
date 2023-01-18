@@ -31,7 +31,7 @@ impl Database {
         self.pool.get().unwrap()
     }
 
-    pub async fn add_server(&self, server: ServerData) -> Result<usize, diesel::result::Error> {
+    pub fn add_server(&self, server: ServerData) -> Result<usize, diesel::result::Error> {
         use crate::schema::registered_servers;
         let mut connection = self.get();
         diesel::insert_into(registered_servers::table)
@@ -39,11 +39,25 @@ impl Database {
             .execute(&mut connection)
     }
 
-    pub async fn get_server(&self, name: String) -> Result<FullServerData, diesel::result::Error> {
+    pub fn get_server_with_name(
+        &self,
+        name: String,
+    ) -> Result<FullServerData, diesel::result::Error> {
         use crate::schema::registered_servers::dsl::*;
         let mut connection = self.get();
         registered_servers
             .filter(server.eq(name))
+            .first::<FullServerData>(&mut connection)
+    }
+
+    pub fn get_server_with_apikey(
+        &self,
+        req_apikey: String,
+    ) -> Result<FullServerData, diesel::result::Error> {
+        use crate::schema::registered_servers::dsl::*;
+        let mut connection = self.get();
+        registered_servers
+            .filter(apikey.eq(req_apikey))
             .first::<FullServerData>(&mut connection)
     }
 }

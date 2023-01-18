@@ -13,6 +13,8 @@ pub enum ControllerError {
     HashError,
     #[error("Password must be 8-64 characters")]
     InvalidPassword,
+    #[error("Unauthorized")]
+    Unauthorized,
     #[error("Failed to insert data into database: `{0}`")]
     DieselError(#[from] diesel::result::Error),
 }
@@ -20,8 +22,9 @@ pub enum ControllerError {
 unsafe impl Send for ControllerError {}
 
 impl ResponseError for ControllerError {
-    fn status_code(&self) -> actix_web::http::StatusCode {
+    fn status_code(&self) -> StatusCode {
         match self {
+            Self::Unauthorized => StatusCode::UNAUTHORIZED,
             Self::InvalidPassword => StatusCode::NOT_ACCEPTABLE,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }

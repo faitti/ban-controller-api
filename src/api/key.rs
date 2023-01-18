@@ -1,7 +1,10 @@
+use std::future::Future;
+use std::pin::Pin;
+
 use actix_web::{
-    get, post,
-    web::{Data, Json},
-    Responder,
+    get, patch, post,
+    web::{block, Data, Json},
+    FromRequest, HttpMessage, Responder,
 };
 use argon2::{
     password_hash::{rand_core::OsRng, SaltString},
@@ -11,8 +14,28 @@ use argon2::{
 use crate::{
     database::Database,
     error::ControllerError,
-    models::{ApikeyResponse, ServerData, ServerRequest},
+    middleware::AuthStatus,
+    models::{ApikeyResponse, FullServerData, ServerData, ServerRequest},
 };
+
+impl FromRequest for FullServerData {
+    type Error = ControllerError;
+    type Future = Pin<Box<dyn Future<Output = actix_web::Result<Self, Self::Error>>>>;
+
+    fn from_request(
+        req: &actix_web::HttpRequest,
+        _payload: &mut actix_web::dev::Payload,
+    ) -> Self::Future {
+        let token = req.extensions().get::<AuthStatus>().cloned();
+        Box::pin(async move {
+            if let Some(AuthStatus::Authorized(data)) = token {
+                Ok(data)
+            } else {
+                Err(ControllerError::Unauthorized)
+            }
+        })
+    }
+}
 
 #[post("/key")]
 pub async fn register_key(
@@ -32,7 +55,7 @@ pub async fn register_key(
         apikey: apikey.clone(),
     };
 
-    match db.add_server(server).await {
+    match block(move || db.add_server(server)).await.unwrap() {
         Ok(_) => return Ok(Json(ApikeyResponse { apikey })),
         Err(e) => return Err(ControllerError::DieselError(e)),
     }
@@ -43,7 +66,9 @@ pub async fn request_key(
     data: Json<ServerRequest>,
     db: Data<Database>,
 ) -> Result<impl Responder, ControllerError> {
-    let server = db.get_server(data.0.server).await.unwrap();
+    let server = block(move || db.get_server_with_name(data.0.server).unwrap())
+        .await
+        .unwrap();
     if let Ok(true) = verify_password(data.0.password, server.password).await {
         return Ok(Json(ApikeyResponse {
             apikey: server.apikey,
@@ -51,6 +76,11 @@ pub async fn request_key(
     } else {
         return Err(ControllerError::VerifyError);
     }
+}
+
+#[patch("/key")]
+pub async fn regenerate_key(data: FullServerData) -> Result<impl Responder, ControllerError> {
+    Ok(Json(data.server))
 }
 
 /// Self explanatory

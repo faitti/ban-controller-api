@@ -1,9 +1,9 @@
 # Api documentation
 
-## **User control**
+## **Server management**
 | Endpoint | Method | Description |
 | --- | --- | --- |
-| /key | GET | Request apikey from server
+| /key | GET | Request server's apikey, sort of a login route
 | /key | POST | Register new server
 
 ### **GET** /key
