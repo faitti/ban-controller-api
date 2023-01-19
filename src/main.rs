@@ -5,12 +5,7 @@ mod middleware;
 mod models;
 mod schema;
 
-use actix_web::{
-    get,
-    http::StatusCode,
-    web::{self, Data},
-    App, HttpServer, Responder,
-};
+use actix_web::{get, http::StatusCode, web::Data, App, HttpServer, Responder};
 use database::Database;
 use middleware::BearerAuth;
 

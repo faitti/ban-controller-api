@@ -5,6 +5,7 @@
 | --- | --- | --- |
 | /key | GET | Request server's apikey, sort of a login route
 | /key | POST | Register new server
+| /key | PATCH | Generate new apikey
 
 ### **GET** /key
 <details>
@@ -71,5 +72,27 @@ curl --request POST 'http://localhost:8080/key' \
 ```JSON
 {
     "apikey": "apikey"
+}
+```
+
+---
+
+### **PATCH** /key
+<details>
+    <summary>Headers</summary>
+
+    Bearer: apikey
+</details>
+
+**Example request**
+```curl
+curl --request PATCH 'http://localhost:8080/key \
+--header 'Bearer: apikey'
+```
+
+**Example response**
+```JSON
+{
+    "apikey": "new_apikey"
 }
 ```

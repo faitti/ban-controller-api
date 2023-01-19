@@ -1,6 +1,5 @@
 use std::rc::Rc;
 
-use crate::error::ControllerError;
 use crate::{database::Database, models};
 use actix_service::{Service, Transform};
 use actix_web::{

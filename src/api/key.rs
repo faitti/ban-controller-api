@@ -79,8 +79,19 @@ pub async fn request_key(
 }
 
 #[patch("/key")]
-pub async fn regenerate_key(data: FullServerData) -> Result<impl Responder, ControllerError> {
-    Ok(Json(data.server))
+pub async fn regenerate_key(
+    data: FullServerData,
+    db: Data<Database>,
+) -> Result<impl Responder, ControllerError> {
+    let new_key = generate_apikey().await;
+    if let Ok(key) = new_key {
+        let resp_key = key.clone();
+        block(move || db.update_apikey(data.server, key).unwrap())
+            .await
+            .unwrap();
+        return Ok(Json(ApikeyResponse { apikey: resp_key }));
+    }
+    return Err(ControllerError::GenerationFailure);
 }
 
 /// Self explanatory

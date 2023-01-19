@@ -60,4 +60,17 @@ impl Database {
             .filter(apikey.eq(req_apikey))
             .first::<FullServerData>(&mut connection)
     }
+
+    pub fn update_apikey(
+        &self,
+        server_name: String,
+        new_key: String,
+    ) -> Result<usize, diesel::result::Error> {
+        use crate::schema::registered_servers::dsl::*;
+        let mut connection = self.get();
+        diesel::update(registered_servers)
+            .filter(server.eq(server_name))
+            .set(apikey.eq(new_key))
+            .execute(&mut connection)
+    }
 }
