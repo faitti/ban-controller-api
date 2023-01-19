@@ -17,6 +17,8 @@ pub enum ControllerError {
     Unauthorized,
     #[error("Failed to generate apikey")]
     GenerationFailure,
+    #[error("0 rows updated")]
+    InsertError,
     #[error("Failed to insert data into database: `{0}`")]
     DieselError(#[from] diesel::result::Error),
 }

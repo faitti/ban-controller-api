@@ -28,7 +28,9 @@ async fn main() -> std::io::Result<()> {
             .wrap(BearerAuth)
             .service({
                 let auth_scope = Scope::new("");
-                auth_scope.service(api::key::regenerate_key /* PATCH /key */)
+                auth_scope
+                    .service(api::key::regenerate_key /* PATCH /key */)
+                    .service(api::ban::add_ban /* POST /ban */)
             })
     })
     .bind(("127.0.0.1", 8080))?

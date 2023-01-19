@@ -7,7 +7,7 @@ use diesel::{
 };
 use dotenv::dotenv;
 
-use crate::models::{FullServerData, ServerData};
+use crate::models::{BanData, FullServerData, ServerData};
 
 type MysqlPool = Pool<ConnectionManager<MysqlConnection>>;
 type MysqlPooled = PooledConnection<ConnectionManager<MysqlConnection>>;
@@ -71,6 +71,14 @@ impl Database {
         diesel::update(registered_servers)
             .filter(server.eq(server_name))
             .set(apikey.eq(new_key))
+            .execute(&mut connection)
+    }
+
+    pub fn add_ban(&self, data: BanData) -> Result<usize, diesel::result::Error> {
+        use crate::schema::bans;
+        let mut connection = self.get();
+        diesel::insert_into(bans::table)
+            .values(&data)
             .execute(&mut connection)
     }
 }

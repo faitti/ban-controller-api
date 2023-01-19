@@ -1,4 +1,4 @@
-use crate::schema::registered_servers;
+use crate::schema::{bans, registered_servers};
 use diesel::{Insertable, Queryable};
 use serde::{Deserialize, Serialize};
 
@@ -28,4 +28,30 @@ pub struct FullServerData {
     pub server: String,
     pub password: String,
     pub apikey: String,
+    pub verified: bool,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Identifiers {
+    pub steam: Option<String>,
+    pub rockstar: Option<String>,
+    pub discord: Option<String>,
+    pub xbox: Option<String>,
+    pub live: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct BanRequestData {
+    pub identifiers: serde_json::Value,
+    pub reason: String,
+    pub length: u64,
+}
+
+#[derive(Insertable)]
+#[diesel(table_name = bans)]
+pub struct BanData {
+    pub identifiers: serde_json::Value,
+    pub reason: String,
+    pub server: String,
+    pub expires: u64,
 }
