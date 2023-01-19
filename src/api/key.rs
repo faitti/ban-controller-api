@@ -56,8 +56,8 @@ pub async fn register_key(
     };
 
     match block(move || db.add_server(server)).await.unwrap() {
-        Ok(_) => return Ok(Json(ApikeyResponse { apikey })),
-        Err(e) => return Err(ControllerError::DieselError(e)),
+        Ok(_) => Ok(Json(ApikeyResponse { apikey })),
+        Err(e) => Err(ControllerError::DieselError(e)),
     }
 }
 
@@ -70,11 +70,11 @@ pub async fn request_key(
         .await
         .unwrap();
     if let Ok(true) = verify_password(data.0.password, server.password).await {
-        return Ok(Json(ApikeyResponse {
+        Ok(Json(ApikeyResponse {
             apikey: server.apikey,
-        }));
+        }))
     } else {
-        return Err(ControllerError::VerifyError);
+        Err(ControllerError::VerifyError)
     }
 }
 
@@ -91,7 +91,7 @@ pub async fn regenerate_key(
             .unwrap();
         return Ok(Json(ApikeyResponse { apikey: resp_key }));
     }
-    return Err(ControllerError::GenerationFailure);
+    Err(ControllerError::GenerationFailure)
 }
 
 /// Self explanatory

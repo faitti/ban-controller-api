@@ -5,7 +5,7 @@ mod middleware;
 mod models;
 mod schema;
 
-use actix_web::{get, http::StatusCode, web::Data, App, HttpServer, Responder};
+use actix_web::{get, http::StatusCode, web::Data, App, HttpServer, Responder, Scope};
 use database::Database;
 use middleware::BearerAuth;
 
@@ -26,7 +26,10 @@ async fn main() -> std::io::Result<()> {
             .service(api::key::request_key /* GET /key */)
             .service(api::key::register_key /* POST /key */)
             .wrap(BearerAuth)
-            .service(api::key::regenerate_key /* PATCH /key */)
+            .service({
+                let auth_scope = Scope::new("");
+                auth_scope.service(api::key::regenerate_key /* PATCH /key */)
+            })
     })
     .bind(("127.0.0.1", 8080))?
     .run()

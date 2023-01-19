@@ -75,9 +75,8 @@ where
                 .unwrap()
                 .map_err(ErrorUnauthorized);
 
-                if server.is_ok() {
-                    req.extensions_mut()
-                        .insert(AuthStatus::Authorized(server.unwrap()));
+                if let Ok(serv) = server {
+                    req.extensions_mut().insert(AuthStatus::Authorized(serv));
                 }
             } else {
                 req.extensions_mut().insert(AuthStatus::Unauthorized);
