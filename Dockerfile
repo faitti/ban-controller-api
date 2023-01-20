@@ -39,4 +39,6 @@ RUN chown -R portinvartija:portinvartija /api
 
 USER portinvartija
 
+RUN source .env
+
 CMD ["sh", "entry.sh"]

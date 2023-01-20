@@ -1,5 +1,4 @@
 #!/bin/sh
-source .env
 while [ 1 ];
 do
     ./diesel database setup && break;

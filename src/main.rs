@@ -8,6 +8,7 @@ mod schema;
 use actix_web::{get, http::StatusCode, web::Data, App, HttpServer, Responder, Scope};
 use database::Database;
 use middleware::BearerAuth;
+use std::env;
 
 #[get("/")]
 async fn root() -> impl Responder {
@@ -16,6 +17,8 @@ async fn root() -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
+    env::set_var("RUST_LOG", "actix_web=debug,actix_server=info");
+    env_logger::init();
     let db_pool = Data::new(Database {
         pool: Box::new(database::get_pool().await),
     });
