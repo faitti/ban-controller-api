@@ -1,13 +1,14 @@
 use std::env;
 
-use diesel::prelude::*;
+use diesel::sql_types::Text;
+use diesel::{prelude::*, sql_query};
 use diesel::{
     r2d2::{self, ConnectionManager, Pool, PooledConnection},
     MysqlConnection, QueryDsl, RunQueryDsl,
 };
 use dotenv::dotenv;
 
-use crate::models::{BanData, FullServerData, ServerData};
+use crate::models::{BanData, FullBanData, FullServerData, Identifiers, ServerData};
 
 type MysqlPool = Pool<ConnectionManager<MysqlConnection>>;
 type MysqlPooled = PooledConnection<ConnectionManager<MysqlConnection>>;
@@ -79,6 +80,28 @@ impl Database {
         let mut connection = self.get();
         diesel::insert_into(bans::table)
             .values(&data)
+            .execute(&mut connection)
+    }
+
+    pub fn get_ban(&self, data: Identifiers) -> Result<FullBanData, diesel::result::Error> {
+        let mut connection = self.get();
+        println!("{}", serde_json::to_value(&data).unwrap().to_string());
+        let query = sql_query("SELECT * FROM `bans` WHERE JSON_OVERLAPS(identifiers, ?);");
+        query
+            .bind::<Text, _>(serde_json::to_value(data).unwrap().to_string())
+            .get_result::<FullBanData>(&mut connection)
+    }
+
+    pub fn update_identifiers(
+        &self,
+        ban_id: u64,
+        data: serde_json::Value,
+    ) -> Result<usize, diesel::result::Error> {
+        use crate::schema::bans::dsl::*;
+        let mut connection = self.get();
+        diesel::update(bans)
+            .filter(id.eq(ban_id))
+            .set(identifiers.eq(data))
             .execute(&mut connection)
     }
 }

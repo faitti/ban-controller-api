@@ -21,19 +21,21 @@ async fn main() -> std::io::Result<()> {
     });
     HttpServer::new(move || {
         App::new()
+            .wrap(actix_web::middleware::Logger::default())
             .app_data(Data::clone(&db_pool))
             .service(root)
             .service(api::key::request_key /* GET /key */)
             .service(api::key::register_key /* POST /key */)
-            .wrap(BearerAuth)
             .service({
                 let auth_scope = Scope::new("");
                 auth_scope
+                    .wrap(BearerAuth)
                     .service(api::key::regenerate_key /* PATCH /key */)
                     .service(api::ban::add_ban /* POST /ban */)
+                    .service(api::ban::is_banned /* GET /ban */)
             })
     })
-    .bind(("127.0.0.1", 8080))?
+    .bind("0.0.0.0:8888")?
     .run()
     .await
 }

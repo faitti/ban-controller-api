@@ -118,7 +118,8 @@ curl --request PATCH 'http://localhost:8080/key \
 ## **Ban management**
 | Endpoint | Method | Description |
 | --- | --- | --- |
-| /ban | POST | Inserts ban data in to the database, for other servers to use that specific ban.
+| /ban | POST | Inserts ban data in to the database, for other servers to use that specific ban. |
+| /ban | GET | Check if player has been banned. |
 
 ### **POST** /ban
 <details>
@@ -137,7 +138,7 @@ curl --request PATCH 'http://localhost:8080/key \
 
 | Param |  Type | Required | Description |
 | --- | --- | --- | --- |
-| identifiers | json object | Yes | `steam`, `rockstar`, `discord`, `xbox`, `live` |
+| identifiers | json object | Yes | `steam`, `license`, `discord`, `xbox`, `live`, `license2` |
 | reason | string | Yes | Ban reason |
 | length | number | Yes | Length of the ban in seconds |
 </details>
@@ -151,7 +152,8 @@ curl --request POST 'http://localhost:8080/ban \
     "identifiers": {
         "steam": "x",
         "discord": "x",
-        "rockstar": "x",
+        "license": "x",
+        "license2": "x",
         "live": "x",
         "xbox": "x"
     },
@@ -166,3 +168,53 @@ curl --request POST 'http://localhost:8080/ban \
     "message": "Successfully banned player"
 }
 ```
+
+---
+
+### **GET** /ban
+<details>
+    <summary>Notes</summary>
+
+    Json payload must contain at least one (1) identifier!
+</details>
+<details>
+    <summary>Headers</summary>
+
+    Bearer: apikey
+    Content-Type: application/json
+</details>
+<details>
+    <summary>Body</summary>
+
+| Param |  Type | Required | Description |
+| --- | --- | --- | --- |
+| steam | string | No | Hex ID |
+| license | string | No | Rockstar license |
+| license2 | string | No | Some license, dunno |
+| discord | string | No | Discord ID |
+| xbox | string | No | Xbox identifier |
+| live | string | No | Live identifier |
+</details>
+
+**Example request**
+```curl
+curl --request POST 'http://localhost:8080/ban \
+--header 'Bearer: apikey' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "steam": "x",
+    "discord": "x",
+    "license": "x",
+    "live": "x",
+    "license2": "x",
+    "xbox": "x"
+}'
+```
+
+**Example response**
+```JSON
+{
+    "reason": "Cheater",
+    "server": "Example roleplay",
+    "expires": 1675451426
+}

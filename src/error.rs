@@ -19,6 +19,8 @@ pub enum ControllerError {
     GenerationFailure,
     #[error("0 rows updated")]
     InsertError,
+    #[error("Empty struct not allowed")]
+    EmptyStruct,
     #[error("Failed to insert data into database: `{0}`")]
     DieselError(#[from] diesel::result::Error),
 }
@@ -29,7 +31,7 @@ impl ResponseError for ControllerError {
     fn status_code(&self) -> StatusCode {
         match self {
             Self::Unauthorized => StatusCode::UNAUTHORIZED,
-            Self::InvalidPassword => StatusCode::NOT_ACCEPTABLE,
+            Self::InvalidPassword | Self::EmptyStruct => StatusCode::NOT_ACCEPTABLE,
             _ => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
