@@ -31,7 +31,7 @@ pub struct FullServerData {
     pub verified: bool,
 }
 
-#[derive(Serialize, Deserialize, Debug, Default, PartialEq, Eq)]
+#[derive(Serialize, Deserialize, Debug, Default, PartialEq, Eq, Clone)]
 pub struct Identifiers {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub steam: Option<String>,

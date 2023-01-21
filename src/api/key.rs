@@ -37,7 +37,7 @@ impl FromRequest for FullServerData {
     }
 }
 
-#[post("/key")]
+#[post("/register")]
 pub async fn register_key(
     data: Json<ServerRequest>,
     db: Data<Database>,
@@ -61,7 +61,7 @@ pub async fn register_key(
     }
 }
 
-#[get("/key")]
+#[post("/login")]
 pub async fn request_key(
     data: Json<ServerRequest>,
     db: Data<Database>,

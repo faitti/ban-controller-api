@@ -1,5 +1,5 @@
 use actix_web::{
-    get, post,
+    post,
     web::{block, Data, Json},
     Responder,
 };
@@ -13,7 +13,7 @@ use crate::{
     models::{BanData, BanRequestData, BanResponseData, FullServerData, Identifiers},
 };
 
-#[post("/ban")]
+#[post("/ban/add")]
 pub async fn add_ban(
     data: Json<BanRequestData>,
     server: FullServerData,
@@ -42,7 +42,7 @@ pub async fn add_ban(
     }
 }
 
-#[get("/ban")]
+#[post("/ban/check")]
 pub async fn is_banned(
     data: Json<Identifiers>,
     db: Data<Database>,
@@ -76,7 +76,7 @@ pub async fn is_banned(
 }
 
 fn generate_identifiers(new: &Identifiers, old: &Identifiers) -> serde_json::Value {
-    let mut updated: Identifiers = Default::default();
+    let mut updated: Identifiers = new.clone();
     if new.discord.is_none() && old.discord.is_some() {
         updated.discord = old.discord.clone();
     }
@@ -97,27 +97,6 @@ fn generate_identifiers(new: &Identifiers, old: &Identifiers) -> serde_json::Val
     }
     if new.steam.is_none() && old.steam.is_some() {
         updated.steam = old.steam.clone();
-    }
-    if new.discord.is_some() {
-        updated.discord = new.discord.clone();
-    }
-    if new.fivem.is_some() {
-        updated.fivem = new.fivem.clone();
-    }
-    if new.license.is_some() {
-        updated.license = new.license.clone();
-    }
-    if new.license2.is_some() {
-        updated.license2 = new.license2.clone();
-    }
-    if new.live.is_some() {
-        updated.live = new.live.clone();
-    }
-    if new.xbox.is_some() {
-        updated.xbox = new.xbox.clone();
-    }
-    if new.steam.is_some() {
-        updated.steam = new.steam.clone();
     }
     serde_json::to_value(updated).unwrap()
 }

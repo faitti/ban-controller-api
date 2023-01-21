@@ -68,7 +68,12 @@ where
             if let Some(apikey) = apikey {
                 let db = db.await.unwrap();
                 let server = block(move || {
-                    let token = apikey.to_str().unwrap().trim();
+                    let token = apikey
+                        .to_str()
+                        .unwrap()
+                        .trim()
+                        .strip_prefix("Bearer ")
+                        .unwrap();
                     db.get_server_with_apikey(token.to_string())
                 })
                 .await

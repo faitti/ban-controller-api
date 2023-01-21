@@ -16,11 +16,11 @@ Status code will always be correct.
 ## **Server management**
 | Endpoint | Method | Description |
 | --- | --- | --- |
-| /key | GET | Request server's apikey, sort of a login route
-| /key | POST | Register new server
+| /login | POST | Request server's apikey, sort of a login route
+| /register | POST | Register new server
 | /key | PATCH | Generate new apikey
 
-### **GET** /key
+### **POST** /login
 <details>
     <summary>Headers</summary>
 
@@ -38,7 +38,7 @@ Status code will always be correct.
 
 **Example request**
 ```curl
-curl --request GET 'http://localhost:8080/key' \
+curl --request POST 'http://localhost:8080/login' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "server": "server_name",
@@ -55,7 +55,7 @@ curl --request GET 'http://localhost:8080/key' \
 
 ----
 
-### **POST** /key
+### **POST** /register
 <details>
     <summary>Headers</summary>
 
@@ -73,7 +73,7 @@ curl --request GET 'http://localhost:8080/key' \
 
 **Example request**
 ```curl
-curl --request POST 'http://localhost:8080/key' \
+curl --request POST 'http://localhost:8080/register' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "server": "server_name",
@@ -94,14 +94,14 @@ curl --request POST 'http://localhost:8080/key' \
 <details>
     <summary>Headers</summary>
 
-    Bearer: apikey
+    Authorization: Bearer apikey
     Content-Type: application/json
 </details>
 
 **Example request**
 ```curl
 curl --request PATCH 'http://localhost:8080/key \
---header 'Bearer: apikey' \
+--header 'Authorization: Bearer apikey' \
 --header 'Content-Type: application/json'
 ```
 
@@ -118,10 +118,10 @@ curl --request PATCH 'http://localhost:8080/key \
 ## **Ban management**
 | Endpoint | Method | Description |
 | --- | --- | --- |
-| /ban | POST | Inserts ban data in to the database, for other servers to use that specific ban. |
-| /ban | GET | Check if player has been banned. |
+| /ban/add | POST | Inserts ban data in to the database, for other servers to use that specific ban. |
+| /ban/check | POST | Check if player has been banned. |
 
-### **POST** /ban
+### **POST** /ban/add
 <details>
     <summary>Notes</summary>
 
@@ -130,7 +130,7 @@ curl --request PATCH 'http://localhost:8080/key \
 <details>
     <summary>Headers</summary>
 
-    Bearer: apikey
+    Authorization: Bearer apikey
     Content-Type: application/json
 </details>
 <details>
@@ -145,8 +145,8 @@ curl --request PATCH 'http://localhost:8080/key \
 
 **Example request**
 ```curl
-curl --request POST 'http://localhost:8080/ban \
---header 'Bearer: apikey' \
+curl --request POST 'http://localhost:8080/ban/add \
+--header 'Authorization: Bearer apikey' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "identifiers": {
@@ -171,7 +171,7 @@ curl --request POST 'http://localhost:8080/ban \
 
 ---
 
-### **GET** /ban
+### **POST** /ban/check
 <details>
     <summary>Notes</summary>
 
@@ -180,7 +180,7 @@ curl --request POST 'http://localhost:8080/ban \
 <details>
     <summary>Headers</summary>
 
-    Bearer: apikey
+    Authorization: Bearer apikey
     Content-Type: application/json
 </details>
 <details>
@@ -198,8 +198,8 @@ curl --request POST 'http://localhost:8080/ban \
 
 **Example request**
 ```curl
-curl --request POST 'http://localhost:8080/ban \
---header 'Bearer: apikey' \
+curl --request POST 'http://localhost:8080/ban/check \
+--header 'Authorization: Bearer apikey' \
 --header 'Content-Type: application/json' \
 --data-raw '{
     "steam": "x",
