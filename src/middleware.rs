@@ -62,7 +62,7 @@ where
 
     fn call(&self, mut req: ServiceRequest) -> Self::Future {
         let db = req.extract::<Data<Database>>();
-        let apikey = req.headers().get("Bearer").cloned();
+        let apikey = req.headers().get("Authorization").cloned();
         let service = Rc::clone(&self.service);
         Box::pin(async move {
             if let Some(apikey) = apikey {
