@@ -30,15 +30,16 @@ async fn main() -> std::io::Result<()> {
             .wrap(actix_cors::Cors::permissive())
             .app_data(Data::clone(&db_pool))
             .service(root)
-            .service(api::key::request_key /* GET /key */)
-            .service(api::key::register_key /* POST /key */)
+            .service(api::key::request_key /* POST /login */)
+            .service(api::key::register_key /* POST /register */)
             .service({
                 let auth_scope = Scope::new("");
                 auth_scope
                     .wrap(BearerAuth)
                     .service(api::key::regenerate_key /* PATCH /key */)
-                    .service(api::ban::add_ban /* POST /ban */)
-                    .service(api::ban::is_banned /* GET /ban */)
+                    .service(api::ban::add_ban /* POST /ban/add */)
+                    .service(api::ban::is_banned /* POST /ban/check */)
+                    .service(api::ban::get_all_bans /* GET /bans */)
             })
     })
     .bind("0.0.0.0:8888")?

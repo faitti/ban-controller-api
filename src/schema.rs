@@ -20,7 +20,4 @@ diesel::table! {
     }
 }
 
-diesel::allow_tables_to_appear_in_same_query!(
-    bans,
-    registered_servers,
-);
+diesel::allow_tables_to_appear_in_same_query!(bans, registered_servers,);

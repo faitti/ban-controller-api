@@ -2,7 +2,7 @@ use std::future::Future;
 use std::pin::Pin;
 
 use actix_web::{
-    get, patch, post,
+    patch, post,
     web::{block, Data, Json},
     FromRequest, HttpMessage, Responder,
 };

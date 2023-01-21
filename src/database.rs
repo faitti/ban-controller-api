@@ -103,4 +103,10 @@ impl Database {
             .set(identifiers.eq(data))
             .execute(&mut connection)
     }
+
+    pub fn get_bans(&self) -> Result<Vec<FullBanData>, diesel::result::Error> {
+        use crate::schema::bans::dsl::*;
+        let mut connection = self.get();
+        bans.get_results(&mut connection)
+    }
 }

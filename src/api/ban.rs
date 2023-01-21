@@ -1,5 +1,5 @@
 use actix_web::{
-    post,
+    get, post,
     web::{block, Data, Json},
     Responder,
 };
@@ -71,6 +71,14 @@ pub async fn is_banned(
                 expires: ban.expires,
             }))
         }
+        Err(e) => Err(ControllerError::DieselError(e)),
+    }
+}
+
+#[get("/bans")]
+pub async fn get_all_bans(db: Data<Database>) -> Result<impl Responder, ControllerError> {
+    match block(move || db.get_bans()).await.unwrap() {
+        Ok(bans) => Ok(Json(bans)),
         Err(e) => Err(ControllerError::DieselError(e)),
     }
 }
