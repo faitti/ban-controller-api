@@ -19,12 +19,15 @@ async fn root() -> impl Responder {
 async fn main() -> std::io::Result<()> {
     env::set_var("RUST_LOG", "actix_web=debug,actix_server=info");
     env_logger::init();
+
     let db_pool = Data::new(Database {
         pool: Box::new(database::get_pool().await),
     });
+
     HttpServer::new(move || {
         App::new()
             .wrap(actix_web::middleware::Logger::default())
+            .wrap(actix_cors::Cors::permissive())
             .app_data(Data::clone(&db_pool))
             .service(root)
             .service(api::key::request_key /* GET /key */)

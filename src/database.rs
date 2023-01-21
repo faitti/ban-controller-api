@@ -85,7 +85,6 @@ impl Database {
 
     pub fn get_ban(&self, data: Identifiers) -> Result<FullBanData, diesel::result::Error> {
         let mut connection = self.get();
-        println!("{}", serde_json::to_value(&data).unwrap().to_string());
         let query = sql_query("SELECT * FROM `bans` WHERE JSON_OVERLAPS(identifiers, ?);");
         query
             .bind::<Text, _>(serde_json::to_value(data).unwrap().to_string())
